@@ -11,7 +11,7 @@ impl Buffer {
 
     pub fn draw_circle_line(&mut self, x: i32, y: i32, r: i32, width: i32, color: Color) -> &mut Self {
 
-        let mut points = (-width / 2 .. width / 2 + 1).map(
+        let mut points = (neg_half(width)..pos_half(width)).map(
             |w|
             self.get_circle_line(x, y, r + w)
         ).collect::<Vec<Vec<(usize, usize)>>>().concat();
@@ -114,17 +114,31 @@ impl Buffer {
         self
     }
 
+    pub fn draw_rect_line(&mut self, x: i32, y: i32, w: i32, h: i32, width: i32, color: Color) -> &mut Self {
+
+        self.draw_line(x + neg_half(width), y, x + w + pos_half(width), y, width, color);
+        self.draw_line(x + neg_half(width), y + h, x + w + pos_half(width), y + h, width, color);
+        self.draw_line(x, y, x, y + h, width, color);
+        self.draw_line(x + w, y, x + w, y + h, width, color);
+
+        self
+    }
+
     pub fn draw_triangle(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: Color) -> &mut Self {
         panic!("Not Implemented!")
-    } 
+    }
 
     pub fn draw_line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, width: i32, color: Color) -> &mut Self {
+
+        if width <= 0 {
+            return self;
+        }
 
         let is_horizontal = (x1 - x2).abs() > (y1 - y2).abs();
 
         if is_horizontal {
 
-            for offset in -width / 2 .. width / 2 + 1 {
+            for offset in neg_half(width)..pos_half(width) {
                 self._draw_line(x1, y1 + offset, x2, y2 + offset, color);
             }
 
@@ -132,7 +146,7 @@ impl Buffer {
 
         else {
 
-            for offset in -width / 2 .. width / 2 + 1 {
+            for offset in neg_half(width)..pos_half(width) {
                 self._draw_line(x1 + offset, y1, x2 + offset, y2, color);
             }
 
@@ -167,12 +181,33 @@ impl Buffer {
             let is_horizontal = (x1 - x2).abs() > (y1 - y2).abs();
 
             if is_horizontal {
-                // x좌표 1씩 증가시키면서 그때그때 대응되는 y좌표 계산
-                // 걍 일일이 찍으면 됨
+                let (mut curr_x, begin_x, dest_x, diff, begin_y) = if x1 < x2 {
+                    (x1, x1, x2, y2 - y1, y1)
+                } else {
+                    (x2, x2, x1, y1 - y2, y2)
+                };
+
+                while curr_x < dest_x {
+                    let curr_y = begin_y +(curr_x - begin_x) * diff / (dest_x - begin_x);
+                    self.blit_pixel(curr_x as usize, curr_y as usize, color);
+                    curr_x += 1;
+                }
+
             }
 
             else {
-                // y좌표 1씩 증가시키면서 위와 동일
+                let (mut curr_y, begin_y, dest_y, diff, begin_x) = if y1 < y2 {
+                    (y1, y1, y2, x2 - x1, x1)
+                } else {
+                    (y2, y2, y1, x1 - x2, x2)
+                };
+
+                while curr_y < dest_y {
+                    let curr_x = begin_x + (curr_y - begin_y) * diff / (dest_y - begin_y);
+                    self.blit_pixel(curr_x as usize, curr_y as usize, color);
+                    curr_y += 1;
+                }
+
             }
 
         }
@@ -189,4 +224,13 @@ fn push_symmetrical_points(x: i32, y: i32, c_x: i32, c_y: i32, vec: &mut Vec<(i3
     vec.push((2 * c_x - x, y));
     vec.push((2 * c_x - x, 2 * c_y - y));
     vec.push((x, 2 * c_y - y));
+}
+
+
+fn neg_half(n: i32) -> i32 {
+    - n / 2
+}
+
+fn pos_half(n: i32) -> i32 {
+    (n + 1) / 2
 }
