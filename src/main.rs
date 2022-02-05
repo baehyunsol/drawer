@@ -7,20 +7,11 @@ mod draw;
 fn main() {
 
     let mut b = buffer::Buffer::new(1080, 1080);
-    let color1 = color::Color::rgba(128, 255, 128, 128);
-    let color2 = color::Color::rgba(255, 128, 255, 255);
+    let color1 = color::Color::rgba(128, 255, 128, 192);
+    let color2 = color::Color::rgba(255, 128, 255, 192);
 
-    for y in 0..8 {
-
-        for x in 0..8 {
-            b.draw_circle(x * 72 + 36 * (y % 2) + 216, y * 62 + 216, 72, color1);
-        }
-
-    }
-
-    let mut m = buffer::Buffer::new(1080, 1080);
-    m.draw_rect(400, 300, 240, 180, color2);
-    b.mask(&m);
+    b.draw_rect(500, 500, 80, 80, color1);
+    b.draw_triangle(500, 500, 579, 500, 579, 579, color2);
 
     b.save("test.png").unwrap();
 }

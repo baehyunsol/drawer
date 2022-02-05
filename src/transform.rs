@@ -3,8 +3,32 @@ use crate::color::Color;
 
 impl Buffer {
 
+    // blit src on self
+    // (0, 0) of src goes to (x, y) of self
     pub fn blit(&mut self, src: &Buffer, x: i32, y: i32) -> &mut Self {
-        panic!("Not Implemented Yet!")
+
+        for curr_x in 0..src.width as i32 {
+
+            if x + curr_x < 0 || x + curr_x >= self.width as i32 {
+                continue;
+            }
+
+            for curr_y in 0..src.height as i32 {
+
+                if y + curr_y < 0 || y + curr_y >= self.height as i32 {
+                    continue;
+                }
+
+                self.blit_pixel(
+                    (curr_x + x) as usize,
+                    (curr_y + y) as usize,
+                    src.get_pixel(curr_x as usize, curr_y as usize)
+                );
+            }
+
+        }
+
+        self
     }
 
     pub fn mask(&mut self, mask: &Buffer) -> &mut Self {
