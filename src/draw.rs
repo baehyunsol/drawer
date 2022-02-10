@@ -72,8 +72,8 @@ impl Buffer {
 
         let x_start = if x > r { x - r } else { 0 };
         let y_start = if y > r { y - r } else { 0 };
-        let x_end = if x + r < self.width as i32 { x + r } else { self.width as i32 };
-        let y_end = if y + r < self.height as i32 { y + r } else { self.height as i32 };
+        let x_end = if x + r < self.width as i32 { x + r } else { self.width as i32 - 1};
+        let y_end = if y + r < self.height as i32 { y + r } else { self.height as i32 - 1};
 
         let rr = r * r;
 
@@ -82,6 +82,40 @@ impl Buffer {
             for curr_y in y_start..y_end + 1 {
 
                 if (curr_x - x) * (curr_x - x) + (curr_y - y) * (curr_y - y) <= rr {
+                    self.blit_pixel(curr_x as usize, curr_y as usize, color);
+                }
+
+            }
+
+        }
+
+        self
+    }
+
+    pub fn draw_ellipse(&mut self, x: i64, y: i64, a: i64, b: i64, r: i64, color: Color) -> &mut Self {
+
+        if r <= 0 {
+            return self;
+        }
+
+        let a = a.abs();
+        let b = b.abs();
+        let ar = a * r;
+        let br = b * r;
+        let bb = b * b;
+        let aa = a * a;
+        let aabbrr = ar * br * a * b;
+
+        let x_start = if x > ar { x - ar } else { 0 };
+        let y_start = if y > br { y - br } else { 0 };
+        let x_end = if x + ar < self.width as i64 { x + ar } else { self.width as i64 - 1};
+        let y_end = if y + br < self.height as i64 { y + br } else { self.height as i64 - 1};
+
+        for curr_x in x_start..x_end + 1 {
+
+            for curr_y in y_start..y_end + 1 {
+
+                if bb * (curr_x - x) * (curr_x - x) + aa * (curr_y - y) * (curr_y - y) <= aabbrr {
                     self.blit_pixel(curr_x as usize, curr_y as usize, color);
                 }
 
@@ -210,7 +244,7 @@ impl Buffer {
 
         if x1 == x2 {
             let begin = y1.min(y2).max(0) as usize;
-            let end = y1.max(y2).min(self.height as i32) as usize;
+            let end = y1.max(y2).min(self.height as i32 - 1) as usize;
 
             for y in begin..end + 1 {
                 self.blit_pixel(x1 as usize, y, color);
@@ -220,7 +254,7 @@ impl Buffer {
 
         else if y1 == y2 {
             let begin = x1.min(x2).max(0) as usize;
-            let end = x1.max(x2).min(self.width as i32) as usize;
+            let end = x1.max(x2).min(self.width as i32 - 1) as usize;
 
             for x in begin..end + 1 {
                 self.blit_pixel(x, y1 as usize, color);

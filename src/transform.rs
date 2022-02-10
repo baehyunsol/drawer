@@ -52,4 +52,32 @@ impl Buffer {
         self
     }
 
+    pub fn crop(&self, x: i32, y: i32, w: i32, h: i32) -> Buffer {
+
+        if w <= 0 || h <= 0 {
+            return Buffer::new(0, 0);
+        }
+
+        let mut result = Buffer::new(w as usize, h as usize);
+
+        for curr_x in x..x + w {
+
+            if curr_x < 0 || curr_x >= self.width as i32 {
+                continue;
+            }
+
+            for curr_y in y..y + h {
+                
+                if curr_y < 0 || curr_y >= self.height as i32 {
+                    continue;
+                }
+
+                result.set_pixel(curr_x as usize, curr_y as usize, self.get_pixel(curr_x as usize, curr_y as usize));
+            }
+
+        }
+
+        result
+    }
+
 }
