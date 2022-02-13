@@ -162,17 +162,17 @@ impl Font {
             _ => {}
         }
 
+        match self.underline {
+            Some(c) => {result.draw_line(0, self.size as i32, self.size as i32, self.size as i32, self.size as i32 / 20 + 1, c);}
+            _ => {}
+        }
+
         result = draw_font_buffer(
             result,
             &self.font_kit_font,
             width, height, self.size,
             glyph_id, self.color
         );
-
-        match self.underline {
-            Some(c) => {result.draw_line(0, self.size as i32, self.size as i32, self.size as i32, self.size as i32 / 20 + 1, c);}
-            _ => {}
-        }
 
         Ok(result)
     }

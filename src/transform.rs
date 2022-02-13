@@ -72,7 +72,7 @@ impl Buffer {
                     continue;
                 }
 
-                result.set_pixel(curr_x as usize, curr_y as usize, self.get_pixel(curr_x as usize, curr_y as usize));
+                result.set_pixel((curr_x - x) as usize, (curr_y - y) as usize, self.get_pixel(curr_x as usize, curr_y as usize));
             }
 
         }

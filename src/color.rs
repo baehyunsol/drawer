@@ -20,22 +20,12 @@ impl Color {
     // other on self
     pub fn blit(&self, other: &Color) -> Self {
 
-        if other.a == 255 {
-            *other
-        }
-
-        else if other.a == 0 {
-            *self
-        }
-
-        else {
-            Color::rgba(
-                self.r / 2 + other.r / 2,
-                self.g / 2 + other.g / 2,
-                self.b / 2 + other.b / 2,
-                self.a / 2 + other.a / 2
-            )
-        }
+        Color::rgba(
+            ((self.r as u32 * (255 - other.a) as u32 + other.r as u32 * other.a as u32) / 255) as u8,
+            ((self.g as u32 * (255 - other.a) as u32 + other.g as u32 * other.a as u32) / 255) as u8,
+            ((self.b as u32 * (255 - other.a) as u32 + other.b as u32 * other.a as u32) / 255) as u8,
+            self.a.max(other.a)
+        )
 
     }
 
