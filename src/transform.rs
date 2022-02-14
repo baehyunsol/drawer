@@ -80,4 +80,47 @@ impl Buffer {
         result
     }
 
+    // zoom in/out to fill
+    pub fn resize(&self, w: usize, h: usize) -> Buffer {
+
+        if w == 0 || h == 0 {
+            return self.clone();
+        }
+
+        let mut origin_curr_x = 0;
+        let mut origin_curr_y = 0;
+        let mut xs = Vec::with_capacity(w);
+        let mut ys = Vec::with_capacity(h);
+
+        for result_curr_x in 0..w {
+
+            while result_curr_x * self.width > origin_curr_x * w && origin_curr_x < self.width - 1 {
+                origin_curr_x += 1;
+            }
+
+            xs.push(origin_curr_x);
+        }
+
+        for result_curr_y in 0..h {
+
+            while result_curr_y * self.height > origin_curr_y * h && origin_curr_y < self.height - 1 {
+                origin_curr_y += 1;
+            }
+
+            ys.push(origin_curr_y);
+        }
+
+        let mut result = Buffer::new(w, h);
+
+        for x in 0..w {
+
+            for y in 0..h {
+                result.set_pixel(x, y, self.get_pixel(xs[x], ys[y]));
+            }
+
+        }
+
+        result
+    }
+
 }
