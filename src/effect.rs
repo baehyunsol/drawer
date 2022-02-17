@@ -3,6 +3,23 @@ use crate::color::Color;
 
 impl Buffer {
 
+    pub fn filter(&mut self, x: usize, y: usize, w: usize, h: usize, f: Box<dyn Fn(&Color) -> Color>) -> &mut Self {
+
+        if x >= self.width || y >= self.height || w == 0 || h == 0 {
+            return self;
+        }
+
+        for curr_x in x..(x + w).min(self.width) {
+
+            for curr_y in y..(y + h).min(self.height) {
+                self.set_pixel(curr_x, curr_y, f(&self.get_pixel(curr_x, curr_y)));
+            }
+        
+        }
+
+        self
+    }
+
     pub fn blur(&mut self, x: usize, y: usize, w: usize, h: usize, intensity: usize) -> &mut Self {
 
         if x >= self.width || y >= self.height || w == 0 || h == 0 || intensity == 0 {
