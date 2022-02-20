@@ -8,12 +8,14 @@ mod effect;
 
 fn main() {
 
-    let mut parent = buffer::Buffer::new(1280, 1280);
-    let mut sample = buffer::Buffer::load("sample.png").unwrap();
+    let mut test = buffer::Buffer::new(1440, 1440);
 
-    sample.filter(0, 0, 1280, 1280, Box::new(|c: &color::Color| c.into_12bit()));
+    let mut font1 = font::Font::from_file("font.otf", 96, color::Color::rgb(192, 44, 44)).unwrap();
+    font1.set_outline(Some(color::Color::rgb(222, 222, 222)));
+    font1.init();
 
-    parent.blit(&sample, 0, 0);
+    let rr = font1.render(&String::from("ABCDEFG This is a sample text!"));
+    test.blit(&rr, 0, 400);
 
-    parent.save("test.png");
+    test.save("test.png");
 }

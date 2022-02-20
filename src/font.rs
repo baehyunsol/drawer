@@ -54,6 +54,11 @@ impl Font {
         self
     }
 
+    pub fn set_outline(&mut self, outline: Option<Color>) -> &mut Self {
+        self.outline = outline;
+        self
+    }
+
     pub fn set_underline(&mut self, underline: Option<Color>) -> &mut Self {
         self.underline = underline;
         self
@@ -70,12 +75,17 @@ impl Font {
 
     fn rasterize_font(&mut self, from: u32, to: u32) {
 
+        let outline_width = match self.outline {
+            None => {0}
+            _ => {self.size / 72}
+        };
+
         for i in from..to + 1 {
             match self.render_single_char(i) {
                 Ok(mut buff) => {
 
                     buff = match get_raster_width(&self.font_kit_font, self.size, i) {
-                        Ok(w) => buff.crop(0, 0, w as i32, buff.height as i32),
+                        Ok(w) => buff.crop(0, 0, (w + outline_width) as i32, buff.height as i32),
                         _ => buff
                     };
 
@@ -162,11 +172,6 @@ impl Font {
             _ => {}
         }
 
-        match self.underline {
-            Some(c) => {result.draw_line(0, self.size as i32, self.size as i32, self.size as i32, self.size as i32 / 20 + 1, c);}
-            _ => {}
-        }
-
         result = draw_font_buffer(
             result,
             &self.font_kit_font,
@@ -174,9 +179,66 @@ impl Font {
             glyph_id, self.color
         );
 
+        match self.outline {
+            Some(c) => {result.blit(&draw_font_outline(&self.font_kit_font, self.size, utf_code, c)?, 0, 0);}
+            _ => {}
+        }
+
+        match self.underline {
+            Some(c) => {result.draw_line(0, self.size as i32, self.size as i32, self.size as i32, self.size as i32 / 20 + 1, c);}
+            _ => {}
+        }
+
         Ok(result)
     }
 
+}
+
+
+fn draw_font_outline(raw_font: &FKFont, size: usize, utf_code: u32, color: Color) -> Result<Buffer, ()> {
+
+    let (width, height) = (size, get_font_height(size));
+    let mut font_buffer = Buffer::new(width, height);
+    let mut outline_buffer = Buffer::new(width, height);
+
+    let glyph_id = get_glyph_id(raw_font, utf_code)?;
+
+    if size == 0 || utf_code == 32 {
+        return Ok(outline_buffer);
+    }
+
+    font_buffer = draw_font_buffer(
+        font_buffer,
+        raw_font,
+        width, height, size,
+        glyph_id, Color::rgb(255, 255, 255)
+    );
+
+    for x in 1..width - 1 {
+
+        for y in 1.. height - 1 {
+            let a = font_buffer.get_pixel(x, y).a;
+
+            if a == 0 {
+                continue;
+            }
+
+            let a_top = font_buffer.get_pixel(x, y - 1).a;
+            let a_bottom = font_buffer.get_pixel(x, y + 1).a;
+            let a_left = font_buffer.get_pixel(x - 1, y).a;
+            let a_right = font_buffer.get_pixel(x + 1, y).a;
+
+            if a_top == 255 && a_bottom == 255 && a_left == 255 && a_right == 255 {
+                continue;
+            }
+
+            outline_buffer.set_pixel(x, y, color);
+            outline_buffer.draw_circle(x as i32, y as i32, size as i32 / 72, color);
+        }
+
+    }
+
+    Ok(outline_buffer)
 }
 
 
@@ -209,7 +271,7 @@ fn get_raster_width(raw_font: &FKFont, size: usize, utf_code: u32) -> Result<usi
         for y in 0..height {
 
             if result.get_pixel(curr, y).a > 0 {
-                return Ok(curr);
+                return Ok(curr + 1);
             }
 
         }
@@ -286,7 +348,7 @@ fn get_font_from_bytes(bytes: Vec<u8>) -> Result<FKFont, ()> {
 
 
 fn get_font_height(size: usize) -> usize {
-    size + size / 5
+    size + size / 4
 }
 
 
