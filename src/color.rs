@@ -1,11 +1,10 @@
-#[derive(Clone, Copy)]
+#[derive(Copy, Clone, PartialEq)]
 pub struct Color {
     pub r: u8,
     pub g: u8,
     pub b: u8,
     pub a: u8
 }
-
 
 impl Color {
 
@@ -17,32 +16,25 @@ impl Color {
         Color {r, g, b, a}
     }
 
-    // other on self
-    pub fn blit(&self, other: &Color) -> Self {
+    pub fn blit(&self, other: Color) -> Color {
 
-        Color::rgba(
-            ((self.r as u32 * (255 - other.a) as u32 + other.r as u32 * other.a as u32) / 255) as u8,
-            ((self.g as u32 * (255 - other.a) as u32 + other.g as u32 * other.a as u32) / 255) as u8,
-            ((self.b as u32 * (255 - other.a) as u32 + other.b as u32 * other.a as u32) / 255) as u8,
-            self.a.max(other.a)
-        )
+        if other.a == 255 {
+            Color::rgb(
+                other.r,
+                other.g,
+                other.b
+            )
+        }
 
-    }
+        else {
+            Color::rgba(
+                ((self.r as u32 * self.a as u32 * (255 - other.a as u32) + other.r as u32 * other.a as u32 * 255) / 65025) as u8,
+                ((self.g as u32 * self.a as u32 * (255 - other.a as u32) + other.g as u32 * other.a as u32 * 255) / 65025) as u8,
+                ((self.b as u32 * self.a as u32 * (255 - other.a as u32) + other.b as u32 * other.a as u32 * 255) / 65025) as u8,
+                ((self.a as u32 * (255 - other.a as u32) + 255 * other.a as u32) / 255) as u8
+            )
+        }
 
-    pub fn into_8bit(&self) -> Self {
-        Color::rgb(
-            ((self.r as u32 + 1) / 32 * 32).min(255) as u8,
-            ((self.g as u32 + 1) / 32 * 32).min(255) as u8,
-            ((self.b as u32 + 1) / 64 * 64).min(255) as u8,
-        )
-    }
-
-    pub fn into_12bit(&self) -> Self {
-        Color::rgb(
-            ((self.r as u32 + 1) / 16 * 16).min(255) as u8,
-            ((self.g as u32 + 1) / 16 * 16).min(255) as u8,
-            ((self.b as u32 + 1) / 16 * 16).min(255) as u8,
-        )
     }
 
 }

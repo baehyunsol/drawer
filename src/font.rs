@@ -29,7 +29,20 @@ impl Font {
 
         let font_kit_font = get_font_from_file(file)?;
 
-        let mut result = Font {
+        let result = Font {
+            font_kit_font, size, rendered_buffers: HashMap::new(),
+            color, background: None, outline: None, underline: None, letter_spacing: size / 4,
+            gap: Buffer::new(0, 0)
+        };
+
+        Ok(result)
+    }
+
+    pub fn from_bytes(bytes: Vec<u8>, size: usize, color: Color) -> Result<Font, ()> {
+
+        let font_kit_font = get_font_from_bytes(bytes)?;
+
+        let result = Font {
             font_kit_font, size, rendered_buffers: HashMap::new(),
             color, background: None, outline: None, underline: None, letter_spacing: size / 4,
             gap: Buffer::new(0, 0)

@@ -20,9 +20,9 @@ It uses [image](https://github.com/image-rs/image) crate for image IO. And [font
   - [ ] SVG format
   - [ ] Videos
 - [X] Pixel by pixel manipulation
-- [ ] 32bit rgba Colors
-  - Alpha channel is partially implemented.
-  - Gradient color is not implemented.
+- [ ] 32bit RGBA Colors
+  - [X] Mono
+  - [ ] Gradient colors.
 - [ ] Drawing basic shapes
   - [X] Pixel perfect circles
     - [X] Filled
@@ -39,7 +39,7 @@ It uses [image](https://github.com/image-rs/image) crate for image IO. And [font
   - [X] Pixel perfect lines
 - [ ] Filters
   - It's possible to add filters manually.
-  - There're not many built-in filters yet.
+  - There's no any built-in filter yet.
 - [ ] Transformation
   - [X] Blit
   - [X] Mask
@@ -51,9 +51,3 @@ It uses [image](https://github.com/image-rs/image) crate for image IO. And [font
   - [X] Background color
   - [X] Underline
   - [X] Outline
-
----
-
-- Why binary, not library?
-  - It should be library,,,
-  - I should fix that someday,,,

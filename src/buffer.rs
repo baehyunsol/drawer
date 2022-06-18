@@ -1,7 +1,7 @@
 use crate::color::Color;
 
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Buffer {
     pub pixels: Vec<Vec<Color>>,
     pub width: usize,
@@ -23,7 +23,7 @@ impl Buffer {
     }
 
     pub fn blit_pixel(&mut self, x: usize, y: usize, color: Color) {
-        self.pixels[y][x] = self.pixels[y][x].blit(&color)
+        self.pixels[y][x] = self.pixels[y][x].blit(color)
     }
 
     pub fn set_pixel(&mut self, x: usize, y: usize, color: Color) {
