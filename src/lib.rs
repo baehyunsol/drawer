@@ -10,3 +10,4 @@ mod testbench;
 
 pub use buffer::Buffer;
 pub use font::Font;
+pub use color::Color;

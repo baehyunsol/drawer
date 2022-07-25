@@ -2,6 +2,11 @@
 name = "h_image"
 version = "0.1.0"
 edition = "2021"
+authors = ["Baehyunsol <baehyunsol@naver.com>"]
+description = "pixel perfect drawing library written in Rust using only CPU"
+license = "MIT"
+keywords = ["image"]
+repository = "https://github.com/baehyunsol/drawer"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
